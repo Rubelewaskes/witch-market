@@ -1,0 +1,36 @@
+networks:
+  dev-net:
+    name: 'dev-net'
+    driver: bridge
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:15-alpine
+    ports:
+      - ${DB_OUT_PORT}:${DB_IN_PORT}
+    networks:
+      - dev-net
+    environment:
+      POSTGRES_DB: witch_workshop
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - ${PGADMIN_OUT_PORT}:${PGADMIN_IN_PORT}
+    networks:
+      - dev-net
+    depends_on:
+      - postgres
+
+volumes:
+  postgres-data:
