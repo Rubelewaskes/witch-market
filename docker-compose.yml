@@ -1,0 +1,65 @@
+networks:
+  dev-net:
+    name: 'dev-net'
+    driver: bridge
+
+services:
+  kafka:
+    container_name: kafka
+    image: confluentinc/cp-kafka:7.7.0
+    ports:
+      - ${KAFKA_PORTS}
+    networks:
+      - dev-net
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_INTERNAL_LISTENER},PLAINTEXT_HOST://${KAFKA_EXTERNAL_LISTENER}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_NODE_ID: 1
+      CLUSTER_ID: r93l-jBYSguv4YLse9ytzw
+      KAFKA_PROCESS_ROLES: controller,broker
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@${KAFKA_CONTROLLER}
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENERS: PLAINTEXT://{KAFKA_INTERNAL_LISTENER},PLAINTEXT_HOST://{KAFKA_LISTENERS_PLAINTEXT},CONTROLLER://${KAFKA_CONTROLLER}
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8090:8080
+    networks:
+    - dev-net
+    environment:
+        DYNAMIC_CONFIG_ENABLED: 'true'
+
+  postgres:
+    container_name: postgres
+    image: postgres:15-alpine
+    ports:
+      - ${DB_PORTS}
+    networks:
+      - dev-net
+    environment:
+      POSTGRES_DB: witch_workshop
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - .infra/initdb:/docker-entrypoint-initdb.d
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - ${PGADMIN_PORTS}
+    networks:
+      - dev-net
+    depends_on:
+      - postgres
+
+volumes:
+  postgres-data:
