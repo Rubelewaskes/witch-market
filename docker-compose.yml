@@ -21,7 +21,11 @@ services:
       KAFKA_PROCESS_ROLES: controller,broker
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@${KAFKA_CONTROLLER}
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENERS: PLAINTEXT://{KAFKA_INTERNAL_LISTENER},PLAINTEXT_HOST://{KAFKA_LISTENERS_PLAINTEXT},CONTROLLER://${KAFKA_CONTROLLER}
+      KAFKA_LISTENERS: PLAINTEXT://${KAFKA_INTERNAL_LISTENER},PLAINTEXT_HOST://${KAFKA_LISTENERS_PLAINTEXT},CONTROLLER://${KAFKA_CONTROLLER}
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_CREATE_TOPICS: |
+        tasks.artifact.pending:3:1,
+        tasks.artifact.completed:3:1
 
   kafka-ui:
     container_name: kafka-ui
@@ -31,7 +35,10 @@ services:
     networks:
     - dev-net
     environment:
-        DYNAMIC_CONFIG_ENABLED: 'true'
+      DYNAMIC_CONFIG_ENABLED: "true"
+      KAFKA_CLUSTERS_0_NAME: "witch"
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:9092"
+      KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: "PLAINTEXT"
 
   postgres:
     container_name: postgres
@@ -60,6 +67,20 @@ services:
       - dev-net
     depends_on:
       - postgres
+
+  artifact-service:
+    build:
+      context: ./artifact-service
+      dockerfile: Dockerfile
+    networks:
+      - dev-net
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8081:8081"
+    depends_on:
+      - kafka
 
 volumes:
   postgres-data:
