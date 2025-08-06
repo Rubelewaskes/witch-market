@@ -77,5 +77,19 @@ services:
     depends_on:
       - kafka
 
+  artifact-service:
+    build:
+      context: ./artifact-service
+      dockerfile: Dockerfile
+    networks:
+      - dev-net
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8081:8081"
+    depends_on:
+      - kafka
+
 volumes:
   postgres-data:
