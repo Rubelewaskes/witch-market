@@ -1,6 +1,5 @@
 package com.witchshop.ordermanagement.entity;
 
-import com.witchshop.ordermanagement.enums.OrderStatuses;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
