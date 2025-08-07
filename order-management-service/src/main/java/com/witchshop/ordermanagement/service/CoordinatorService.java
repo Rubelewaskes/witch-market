@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,9 +37,9 @@ public class CoordinatorService {
             return;
             //TODO Подумать над Exception
         }
-        Optional<Integer> next_step = dbService.getNextStep(taskMessage.getPipelineId(),taskMessage.getStepId().add(BigInteger.ONE));
+        Optional<Integer> next_step = dbService.getNextStep(taskMessage.getPipelineId(),taskMessage.getStepNumber()+1);
 
-        if (next_step.isPresent()){
+        if (next_step.isEmpty()){
             List< TaskMessage.TaskResult> results = taskMessage.getPayload().getPreviousResults();
             if (results.get(results.size() - 1).getStatus().equals("SUCCESS")){
                 kafkaService.completed(taskMessage);

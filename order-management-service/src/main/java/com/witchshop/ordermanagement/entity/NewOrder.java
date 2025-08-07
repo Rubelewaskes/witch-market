@@ -10,6 +10,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NewOrder {
-    private Integer pipelineId;
+    private Long pipelineId;
     private UUID clientId;
 }

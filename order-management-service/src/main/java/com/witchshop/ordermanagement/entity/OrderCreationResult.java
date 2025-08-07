@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class OrderCreationResult {
     private UUID orderId;
-    private Integer pipelineId;
+    private Long pipelineId;
     private String taskType;
     private Specialization specialization;
     private List<String> ingredients;

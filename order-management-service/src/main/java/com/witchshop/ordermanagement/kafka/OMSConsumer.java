@@ -21,7 +21,7 @@ public class OMSConsumer {
         try {
             TaskMessage message = objectMapper.readValue(messageJson, TaskMessage.class);
 
-            log.info("Прибыл результат {} этапа заказа {}", message.getStepId(), message.getOrderId());
+            log.info("Прибыл результат {} этапа заказа {}", message.getStepNumber(), message.getOrderId());
             coordinatorService.taskResult(message);
         } catch (JsonProcessingException e) {
             log.error("Ошибка парсинга сообщения: {}", messageJson, e);

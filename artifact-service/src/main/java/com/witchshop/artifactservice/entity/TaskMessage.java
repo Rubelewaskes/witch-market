@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -15,8 +14,8 @@ import com.witchshop.artifactservice.enums.Specialization;
 @AllArgsConstructor
 public class TaskMessage {
     private UUID orderId;
-    private BigInteger pipelineId;
-    private BigInteger stepId;
+    private Long pipelineId;
+    private Integer stepNumber;
     private String taskType;
     private Specialization specialization;
     private Payload payload;
@@ -31,7 +30,7 @@ public class TaskMessage {
     }
     @Data
     public static class TaskResult {
-        private BigInteger stepId;
+        private Integer stepNumber;
         private String status;
         private String errorMessage;
         private Map<String, Object> details;

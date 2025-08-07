@@ -45,7 +45,7 @@ public class ArtifactService {
         log.info("quality: {}, durability: {}", result.get("quality"), result.get("durability"));
 
         TaskMessage.TaskResult taskResult = new TaskMessage.TaskResult();
-        taskResult.setStepId(task.getStepId());
+        taskResult.setStepNumber(task.getStepNumber());
         taskResult.setStatus("SUCCESS");
         taskResult.setErrorMessage(null);
         taskResult.setDetails(result);
@@ -59,7 +59,7 @@ public class ArtifactService {
         log.warn("Неудачная ковка артефакта");
 
         TaskMessage.TaskResult taskResult = new TaskMessage.TaskResult();
-        taskResult.setStepId(task.getStepId());
+        taskResult.setStepNumber(task.getStepNumber());
         taskResult.setStatus("FAILED");
         taskResult.setErrorMessage("Какая-то причина");
 
@@ -87,7 +87,7 @@ public class ArtifactService {
         return new TaskMessage(
                 task.getOrderId(),
                 task.getPipelineId(),
-                task.getStepId(),
+                task.getStepNumber(),
                 task.getTaskType(),
                 task.getSpecialization(),
                 payload,

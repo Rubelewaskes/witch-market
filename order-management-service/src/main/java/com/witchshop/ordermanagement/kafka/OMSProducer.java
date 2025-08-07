@@ -30,6 +30,6 @@ public class OMSProducer {
     public void sendToArtifact (TaskMessage taskMessage) {
         String topic = "tasks.artifact.pending";
         kafkaTemplate.send(topic, taskMessage);
-        log.info("Задача {} заказа {} отправлена в топик {}", taskMessage.getStepId(), taskMessage.getOrderId(), topic);
+        log.info("Задача {} заказа {} отправлена в топик {}", taskMessage.getStepNumber(), taskMessage.getOrderId(), topic);
     }
 }
