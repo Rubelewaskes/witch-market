@@ -7,11 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class KafkaConfiguration {
     @Bean
-    public NewTopic pendingTopic() {
-        return new NewTopic("tasks.artifact.pending", 3, (short) 1);
-    }
+    public NewTopic pendingTopic() {return new NewTopic("tasks.artifact.pending", 3, (short) 1);}
     @Bean
-    public NewTopic completeTopic() {
-        return new NewTopic("tasks.artifact.completed", 3, (short) 1);
-    }
+    public NewTopic completeTopic() {return new NewTopic("tasks.artifact.completed", 3, (short) 1);}
 }
