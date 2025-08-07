@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -41,50 +42,29 @@ public class ArtifactService {
 
     private void createSuccessResponse(TaskMessage task) {
         Map<String, Object> result = generateArtifactResult();
-        log.info("quality: {},durability: {}", result.get("quality"), result.get("durability"));
+        log.info("quality: {}, durability: {}", result.get("quality"), result.get("durability"));
 
-        TaskMessage.Payload payload = new TaskMessage.Payload();
-        payload.setIngredients(Collections.emptyList());
-        payload.setRequirements(Collections.emptyMap());
-        payload.setPreviousResults(Map.of(
-                "status", "SUCCESS",
-                "quality", result.get("quality"),
-                "durability", result.get("durability"),
-                "message", result
-        ));
-        TaskMessage resultMessage = new TaskMessage(
-                task.getOrderId(),
-                task.getPipelineId(),
-                task.getStepId(),
-                task.getTaskType(),
-                task.getSpecialization(),
-                payload,
-                Instant.now().toString(),
-                task.getCorrelationId()
-        );
+        TaskMessage.TaskResult taskResult = new TaskMessage.TaskResult();
+        taskResult.setStepId(task.getStepId());
+        taskResult.setStatus("SUCCESS");
+        taskResult.setErrorMessage(null);
+        taskResult.setDetails(result);
+
+        TaskMessage resultMessage = creteResultMessage(taskResult, task);
+
         resultProducer.sendResult(resultMessage);
     }
 
     private void createFailureResponse(TaskMessage task) {
         log.warn("Неудачная ковка артефакта");
 
-        TaskMessage.Payload payload = new TaskMessage.Payload();
-        payload.setIngredients(Collections.emptyList());
-        payload.setRequirements(Collections.emptyMap());
-        payload.setPreviousResults(Map.of(
-                "status", "FAILED"
-        ));
+        TaskMessage.TaskResult taskResult = new TaskMessage.TaskResult();
+        taskResult.setStepId(task.getStepId());
+        taskResult.setStatus("FAILED");
+        taskResult.setErrorMessage("Какая-то причина");
 
-        TaskMessage resultMessage = new TaskMessage(
-                task.getOrderId(),
-                task.getPipelineId(),
-                task.getStepId(),
-                task.getTaskType(),
-                task.getSpecialization(),
-                payload,
-                Instant.now().toString(),
-                task.getCorrelationId()
-        );
+        TaskMessage resultMessage = creteResultMessage(taskResult, task);
+
         resultProducer.sendResult(resultMessage);
     }
 
@@ -95,6 +75,24 @@ public class ArtifactService {
         return Map.of(
                 "quality", quality,
                 "durability", 80 + random.nextInt(20)
+        );
+    }
+
+    private TaskMessage creteResultMessage(TaskMessage.TaskResult taskResult, TaskMessage task) {
+        TaskMessage.Payload payload = new TaskMessage.Payload();
+        payload.setIngredients(Collections.emptyList());
+        payload.setRequirements(Collections.emptyMap());
+        payload.setPreviousResults(List.of(taskResult));
+
+        return new TaskMessage(
+                task.getOrderId(),
+                task.getPipelineId(),
+                task.getStepId(),
+                task.getTaskType(),
+                task.getSpecialization(),
+                payload,
+                Instant.now().toString(),
+                task.getCorrelationId()
         );
     }
 }

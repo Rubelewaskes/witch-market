@@ -16,7 +16,7 @@ public class TaskMessage {
     private Integer pipelineId;
     private Integer stepId;
     private String taskType;
-    private Specialization specialization; // enum: ARTIFACTOR, SCHOLAR и т.д.
+    private Specialization specialization;
     private Payload payload;
     private String timestamp;
     private UUID correlationId;
@@ -25,6 +25,13 @@ public class TaskMessage {
     public static class Payload {
         private List<String> ingredients;
         private Map<String, Object> requirements;
-        private Map<String, Object> previousResults;
+        private List<TaskResult> previousResults;
+    }
+    @Data
+    public static class TaskResult {
+        private Integer stepId;
+        private String status;
+        private String errorMessage;
+        private Map<String, Object> details;
     }
 }
