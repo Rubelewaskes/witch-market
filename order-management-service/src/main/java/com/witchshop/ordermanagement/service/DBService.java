@@ -5,6 +5,7 @@ import com.witchshop.ordermanagement.entity.OrderCreationResult;
 import com.witchshop.ordermanagement.enums.Specialization;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.*;
 
 @Service
@@ -22,5 +23,9 @@ public class DBService {
                 Arrays.asList("dragon_scale", "mithril_ingot"),
                 requirements
         );
+    }
+    public Optional<Integer> getNextStep(BigInteger pipelineId, BigInteger stepId){
+        //TODO Сначала, конечно, идёт в БД, чтобы понять, есть ли следующий шаг и кидает Optional.of(value)
+        return Optional.empty();
     }
 }
