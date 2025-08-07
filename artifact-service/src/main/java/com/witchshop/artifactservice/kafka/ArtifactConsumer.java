@@ -1,5 +1,7 @@
 package com.witchshop.artifactservice.kafka;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.witchshop.artifactservice.kafka.ArtifactProducer;
 import com.witchshop.artifactservice.entity.TaskMessage;
 import com.witchshop.artifactservice.service.ArtifactService;
@@ -14,14 +16,18 @@ import org.springframework.stereotype.Component;
 public class ArtifactConsumer {
 
     private final ArtifactService processingService;
-    private final ArtifactProducer resultProducer;
+    private final ObjectMapper objectMapper;
 
     @KafkaListener(topics = "tasks.artifact.pending")
-    public void consumeTask(TaskMessage task) {
-        log.info("Получена новая задача: {}", task);
-
-        TaskMessage result = processingService.processTask(task);
-
-        resultProducer.sendResult(result);
+    public void consumeTask(String messageJson) {
+        try {
+            TaskMessage message = objectMapper.readValue(messageJson, TaskMessage.class);
+            log.info("Получена новая задача заказа {}", message.getOrderId());
+            processingService.processTask(message);
+        } catch (JsonProcessingException e) {
+            log.error("Ошибка парсинга сообщения: {}", messageJson, e);
+        } catch (IllegalArgumentException e) {
+            log.error("Некорректные данные в сообщении: {}", messageJson, e);
+        }
     }
 }

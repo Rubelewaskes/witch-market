@@ -1,6 +1,8 @@
 package com.witchshop.artifactservice.service;
 
 import com.witchshop.artifactservice.entity.TaskMessage;
+import com.witchshop.artifactservice.kafka.ArtifactProducer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +14,13 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ArtifactService {
 
     private final Random random = new Random();
+    private final ArtifactProducer resultProducer;
 
-    public TaskMessage processTask(TaskMessage task) {
+    public void processTask(TaskMessage task) {
         log.info("Начали ковку артефакта");
 
         int delay = 5000 + random.nextInt(5000);
@@ -29,13 +33,13 @@ public class ArtifactService {
         boolean success = random.nextDouble() < 0.6;
 
         if (success) {
-            return createSuccessResponse(task);
+            createSuccessResponse(task);
         } else {
-            return createFailureResponse(task);
+            createFailureResponse(task);
         }
     }
 
-    private TaskMessage createSuccessResponse(TaskMessage task) {
+    private void createSuccessResponse(TaskMessage task) {
         Map<String, Object> result = generateArtifactResult();
         log.info("quality: {},durability: {}", result.get("quality"), result.get("durability"));
 
@@ -48,8 +52,7 @@ public class ArtifactService {
                 "durability", result.get("durability"),
                 "message", result
         ));
-
-        return new TaskMessage(
+        TaskMessage resultMessage = new TaskMessage(
                 task.getOrderId(),
                 task.getPipelineId(),
                 task.getStepId(),
@@ -59,9 +62,10 @@ public class ArtifactService {
                 Instant.now().toString(),
                 task.getCorrelationId()
         );
+        resultProducer.sendResult(resultMessage);
     }
 
-    private TaskMessage createFailureResponse(TaskMessage task) {
+    private void createFailureResponse(TaskMessage task) {
         log.warn("Неудачная ковка артефакта");
 
         TaskMessage.Payload payload = new TaskMessage.Payload();
@@ -71,7 +75,7 @@ public class ArtifactService {
                 "status", "FAILED"
         ));
 
-        return new TaskMessage(
+        TaskMessage resultMessage = new TaskMessage(
                 task.getOrderId(),
                 task.getPipelineId(),
                 task.getStepId(),
@@ -81,6 +85,7 @@ public class ArtifactService {
                 Instant.now().toString(),
                 task.getCorrelationId()
         );
+        resultProducer.sendResult(resultMessage);
     }
 
     private Map<String, Object> generateArtifactResult() {
