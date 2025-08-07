@@ -3,6 +3,8 @@ package com.witchshop.ordermanagement.entity;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Data;
+
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -13,8 +15,8 @@ import com.witchshop.ordermanagement.enums.Specialization;
 @AllArgsConstructor
 public class TaskMessage {
     private UUID orderId;
-    private Integer pipelineId;
-    private Integer stepId;
+    private BigInteger pipelineId;
+    private BigInteger stepId;
     private String taskType;
     private Specialization specialization;
     private Payload payload;
@@ -29,7 +31,7 @@ public class TaskMessage {
     }
     @Data
     public static class TaskResult {
-        private Integer stepId;
+        private BigInteger stepId;
         private String status;
         private String errorMessage;
         private Map<String, Object> details;
