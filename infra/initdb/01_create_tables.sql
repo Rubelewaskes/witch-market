@@ -1,7 +1,7 @@
 CREATE TYPE order_status AS ENUM ('IN_PROGRESS', 'COMPLETED', 'CANCELLED');
 CREATE TYPE task_status AS ENUM ('PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED');
 CREATE TYPE worker_status AS ENUM ('ACTIVE', 'VACATION', 'WEEKEND');
-CREATE TYPE specialization AS ENUM ('POTION_MASTER', 'ARTIFACTOR', 'SCHOLAR', 'CHIMEROLOGIST');
+CREATE TYPE specialization AS ENUM ('POTION', 'ARTIFACT', 'SCHOLAR', 'CHIMEROLOGIST');
 
 CREATE TABLE pipeline_definitions (
     id SERIAL PRIMARY KEY,
@@ -12,11 +12,11 @@ CREATE TABLE pipeline_definitions (
 CREATE TABLE pipeline_step_definitions (
     id SERIAL PRIMARY KEY ,
     pipeline_id INTEGER NOT NULL REFERENCES pipeline_definitions(id),
-    step_number INTEGER NOT NULL CHECK (step_number > 0),
+    step_number INTEGER NOT NULL CHECK (step_number >= 0),
     specialization specialization NOT NULL,
     task_type VARCHAR(255) NOT NULL,
     ingredients JSONB NOT NULL DEFAULT '[]',
-    requirements JSONB NOT NULL DEFAULT '{}',
+    requirements JSONB NOT NULL DEFAULT '[]',
     UNIQUE (pipeline_id, step_number)
 );
 
@@ -41,11 +41,11 @@ CREATE TABLE workers (
 CREATE TABLE task_executions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_id UUID NOT NULL REFERENCES orders(id),
-    step_number INTEGER NOT NULL CHECK (step_number > 0),
+    step_number INTEGER NOT NULL CHECK (step_number >= 0),
     specialization specialization NOT NULL,
     status task_status NOT NULL,
     worker_id UUID NULL REFERENCES workers(id),
     started_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     completed_at TIMESTAMP,
-    result_data JSONB
+    result_data TEXT
 );
