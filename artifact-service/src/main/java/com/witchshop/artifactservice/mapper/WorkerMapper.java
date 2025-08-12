@@ -1,6 +1,5 @@
 package com.witchshop.artifactservice.mapper;
 
-public interface ArtifactMapper {
 import com.witchshop.sharedlib.dao.Workers;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

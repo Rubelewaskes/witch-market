@@ -1,5 +1,7 @@
 package com.witchshop.artifactservice.entity;
 
+import lombok.Data;
+
 @Data
 public class Product {
     private String quality;
