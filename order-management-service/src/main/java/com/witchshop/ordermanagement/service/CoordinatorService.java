@@ -1,13 +1,18 @@
 package com.witchshop.ordermanagement.service;
 
 import com.witchshop.ordermanagement.entity.NewOrder;
-import com.witchshop.ordermanagement.entity.OrderCreationResult;
-import com.witchshop.ordermanagement.entity.TaskMessage;
+import com.witchshop.sharedlib.dao.Order;
+import com.witchshop.sharedlib.dao.PipelineStepDefinition;
+import com.witchshop.sharedlib.dao.TaskExecution;
+import com.witchshop.sharedlib.enums.OrderStatuses;
+import com.witchshop.sharedlib.enums.TaskStatuses;
+import com.witchshop.sharedlib.entity.TaskMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,42 +22,93 @@ import java.util.Optional;
 public class CoordinatorService {
     private final KafkaService kafkaService;
     private final DBService dbService;
-    private final TaskService taskService;
 
     @Transactional
     public void createNewOrder(NewOrder newOrder) {
-        OrderCreationResult info = dbService.createNewOrder(newOrder);
+        Order createdOrder = dbService.insertNewOrder(newOrder);
+        PipelineStepDefinition step = dbService.getStepByPipelineIdAndStepNumber(createdOrder.getPipelineId(), 0);
 
-        TaskMessage taskMessage = taskService.newOrderTask(info);
+        log.info(step.toString());
+
+        TaskExecution task = dbService.insertNewTask(createdOrder.getId(),
+                step.getStepNumber(),
+                step.getSpecialization(),
+                TaskStatuses.PENDING
+        );
+
+        TaskMessage.Payload payload = new TaskMessage.Payload();
+        payload.setIngredients(step.getIngredients());
+        payload.setRequirements(step.getRequirements());
+
+        TaskMessage taskMessage = new TaskMessage(
+                createdOrder.getId(),
+                createdOrder.getPipelineId(),
+                task.getStepNumber(),
+                step.getTaskType(),
+                task.getSpecialization(),
+                payload,
+                LocalDateTime.now(),
+                task.getId()
+        );
 
         kafkaService.newOrder(taskMessage);
 
-        kafkaService.newArtifact(taskMessage);
+        kafkaService.sendTask(taskMessage);
     }
 
     @Transactional
-    public void taskResult(TaskMessage taskMessage) {
-        if (taskMessage == null || taskMessage.getPayload() == null) {
+    public void taskCompleted(TaskMessage resultTaskMessage) {
+        if (resultTaskMessage == null || resultTaskMessage.getPayload() == null) {
             log.error("Received null task message or payload");
             return;
             //TODO Подумать над Exception
         }
-        Optional<Integer> next_step = dbService.getNextStep(taskMessage.getPipelineId(),taskMessage.getStepNumber()+1);
+        PipelineStepDefinition nextStep = dbService.getNextStep(resultTaskMessage.getPipelineId(),resultTaskMessage.getStepNumber()+1);
+        List<TaskMessage.TaskResult> results = resultTaskMessage.getPayload().getPreviousResults();
 
-        if (next_step.isEmpty()){
-            List< TaskMessage.TaskResult> results = taskMessage.getPayload().getPreviousResults();
+        if (nextStep == null){
+
             if (results.get(results.size() - 1).getStatus().equals("SUCCESS")){
-                kafkaService.completed(taskMessage);
+                dbService.updateOrderStatus(resultTaskMessage.getOrderId(), OrderStatuses.COMPLETED);
+                kafkaService.completed(resultTaskMessage);
             }
             else{
-                kafkaService.cancelled(taskMessage);
+                dbService.updateOrderStatus(resultTaskMessage.getOrderId(), OrderStatuses.CANCELLED);
+                kafkaService.cancelled(resultTaskMessage);
             }
         }
         else{
-            /*
-            * Тут идёт в бд, ищет новый шаг и отправляет дальше
-            * */
+            if (results.get(results.size() - 1).getStatus().equals("FAILED")){
+                dbService.updateOrderStatus(resultTaskMessage.getOrderId(), OrderStatuses.CANCELLED);
+                kafkaService.cancelled(resultTaskMessage);
+            }
+            else{
+                dbService.updateOrderStatus(resultTaskMessage.getOrderId(), OrderStatuses.IN_PROGRESS);
+
+                TaskExecution task =dbService.insertNewTask(
+                        resultTaskMessage.getOrderId(),
+                        nextStep.getStepNumber(),
+                        nextStep.getSpecialization(),
+                        TaskStatuses.PENDING
+                );
+
+                TaskMessage.Payload payload = new TaskMessage.Payload();
+                payload.setIngredients(nextStep.getIngredients());
+                payload.setRequirements(nextStep.getRequirements());
+
+                TaskMessage taskMessage = new TaskMessage(
+                        resultTaskMessage.getOrderId(),
+                        resultTaskMessage.getPipelineId(),
+                        task.getStepNumber(),
+                        nextStep.getTaskType(),
+                        task.getSpecialization(),
+                        payload,
+                        LocalDateTime.now(),
+                        task.getId()
+                );
+
+                kafkaService.sendTask(taskMessage);
+            }
         }
     }
 }
-

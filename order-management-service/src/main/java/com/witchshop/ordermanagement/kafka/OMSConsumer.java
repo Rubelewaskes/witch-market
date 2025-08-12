@@ -2,8 +2,8 @@ package com.witchshop.ordermanagement.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.witchshop.ordermanagement.entity.TaskMessage;
 import com.witchshop.ordermanagement.service.CoordinatorService;
+import com.witchshop.sharedlib.entity.TaskMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -21,8 +21,8 @@ public class OMSConsumer {
         try {
             TaskMessage message = objectMapper.readValue(messageJson, TaskMessage.class);
 
-            log.info("Прибыл результат {} этапа заказа {}", message.getStepNumber(), message.getOrderId());
-            coordinatorService.taskResult(message);
+            log.debug("Прибыл результат {} этапа заказа {}", message.getStepNumber(), message.getOrderId());
+            coordinatorService.taskCompleted(message);
         } catch (JsonProcessingException e) {
             log.error("Ошибка парсинга сообщения: {}", messageJson, e);
         } catch (IllegalArgumentException e) {

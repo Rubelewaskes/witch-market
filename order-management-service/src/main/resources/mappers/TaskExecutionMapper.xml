@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.witchshop.ordermanagement.mapper.TaskExecutionMapper">
+
+    <insert id="insertTask" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO task_executions (order_id, step_number, specialization, status, started_at)
+        VALUES (#{task.orderId, typeHandler=com.witchshop.sharedlib.typehandler.UUIDTypeHandler},
+                #{task.stepNumber},
+                #{task.specialization, javaType=com.witchshop.sharedlib.enums.Specialization,
+                                     typeHandler=com.witchshop.sharedlib.typehandler.SpecializationTypeHandler},
+                #{task.status, javaType=com.witchshop.sharedlib.enums.TaskStatuses,
+                            typeHandler=com.witchshop.sharedlib.typehandler.TaskStatusesTypeHandler},
+                NOW())
+    </insert>
+
+</mapper>

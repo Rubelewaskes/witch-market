@@ -1,6 +1,6 @@
 package com.witchshop.ordermanagement.entity;
 
-import com.witchshop.ordermanagement.enums.Specialization;
+import com.witchshop.sharedlib.enums.Specialization;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
