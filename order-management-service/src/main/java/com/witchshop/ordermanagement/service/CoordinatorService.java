@@ -28,8 +28,6 @@ public class CoordinatorService {
         Order createdOrder = dbService.insertNewOrder(newOrder);
         PipelineStepDefinition step = dbService.getStepByPipelineIdAndStepNumber(createdOrder.getPipelineId(), 0);
 
-        log.info(step.toString());
-
         TaskExecution task = dbService.insertNewTask(createdOrder.getId(),
                 step.getStepNumber(),
                 step.getSpecialization(),
