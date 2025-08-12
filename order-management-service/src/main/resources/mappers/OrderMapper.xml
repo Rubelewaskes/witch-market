@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.witchshop.ordermanagement.mapper.OrderMapper">
+
+    <insert id="insertOrder" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO orders (pipeline_id, status, client_id, created_at, updated_at)
+        VALUES (
+                   #{order.pipelineId},
+                   #{order.status, typeHandler=com.witchshop.sharedlib.typehandler.OrderStatusesTypeHandler},
+                   #{order.clientId, typeHandler=com.witchshop.sharedlib.typehandler.UUIDTypeHandler},
+                   NOW(),
+                   NOW())
+    </insert>
+
+    <update id="updateOrderStatus">
+        UPDATE orders
+        SET status = #{orderStatus, typeHandler=com.witchshop.sharedlib.typehandler.TaskStatusesTypeHandler}
+        WHERE id = #{orderId, typeHandler=com.witchshop.sharedlib.typehandler.UUIDTypeHandler}
+    </update>
+
+</mapper>

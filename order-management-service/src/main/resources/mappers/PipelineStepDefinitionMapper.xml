@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.witchshop.ordermanagement.mapper.PipelineStepDefinitionMapper">
+
+    <resultMap id="PipelineStepDefinitionMap"
+               type="com.witchshop.sharedlib.dao.PipelineStepDefinition">
+        <id property="id" column="id" javaType="Integer" jdbcType="INTEGER"/>
+        <result property="pipelineId" column="pipeline_id" jdbcType="BIGINT"/>
+        <result property="stepNumber" column="step_number" jdbcType="INTEGER"/>
+        <result property="specialization" column="specialization"
+                typeHandler="com.witchshop.sharedlib.typehandler.SpecializationTypeHandler"
+                javaType="com.witchshop.sharedlib.enums.Specialization"/>
+        <result property="taskType" column="task_type" jdbcType="VARCHAR"/>
+        <result property="ingredients" column="ingredients"
+                typeHandler="com.witchshop.sharedlib.typehandler.ListMapTypeHandler"/>
+        <result property="requirements" column="requirements"
+                typeHandler="com.witchshop.sharedlib.typehandler.ListMapTypeHandler"/>
+    </resultMap>
+
+    <select id="selectStepByPipelineIdAndStepNumber"
+            parameterType="map"
+            resultMap="PipelineStepDefinitionMap">
+        SELECT id, pipeline_id, step_number, specialization, task_type, ingredients, requirements
+        FROM pipeline_step_definitions
+        WHERE pipeline_id = #{pipelineId, jdbcType=BIGINT}
+          AND step_number = #{stepNumber, jdbcType=INTEGER}
+    </select>
+
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <typeAliases>
+        <package name="com.witchshop.sharedlib.dao"/>
+    </typeAliases>
+    <typeHandlers>
+        <typeHandler handler="com.witchshop.sharedlib.typehandler.UUIDTypeHandler"
+                     javaType="java.util.UUID"
+                     jdbcType="OTHER"/>
+        <typeHandler handler="com.witchshop.sharedlib.typehandler.OrderStatusesTypeHandler"/>
+        <typeHandler handler="com.witchshop.sharedlib.typehandler.SpecializationTypeHandler"/>
+        <typeHandler handler="com.witchshop.sharedlib.typehandler.TaskStatusesTypeHandler"/>
+        <typeHandler handler="com.witchshop.sharedlib.typehandler.WorkerStatusesTypeHandler"/>
+        <typeHandler handler="com.witchshop.sharedlib.typehandler.ListMapTypeHandler"/>
+    </typeHandlers>
+</configuration>

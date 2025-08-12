@@ -1,4 +1,4 @@
-package com.witchshop.ordermanagement.enums;
+package com.witchshop.sharedlib.enums;
 
 public enum Specialization {
     ARTIFACT,
@@ -6,3 +6,4 @@ public enum Specialization {
     POTION,
     ARTIFACTOR, SCHOLAR
 }
+
