@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.witchshop.artifactservice.mapper.WorkerMapper">
+
+    <select id="findAvailableWorker" resultType="com.witchshop.sharedlib.dao.Workers">
+        SELECT * FROM workers
+        WHERE specialization = 'ARTIFACT'
+          AND status = 'ACTIVE'
+            LIMIT 1
+    </select>
+
+    <insert id="insertWorker" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO workers (specialization, status, last_activity, thread_pool_size)
+        VALUES (
+                   #{worker.specialization},
+                   #{worker.status, typeHandler=com.witchshop.sharedlib.typehandler.WorkerStatusesTypeHandler},
+                   NOW(),
+                   #{worker.threadPoolSize}
+               )
+    </insert>
+
+    <update id="updateActivity">
+        UPDATE workers
+            SET last_activity = NOW()
+            WHERE id = #{id, typeHandler=com.witchshop.sharedlib.typehandler.UUIDTypeHandler}
+    </update>
+
+</mapper>

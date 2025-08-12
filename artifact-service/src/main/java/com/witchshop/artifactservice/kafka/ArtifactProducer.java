@@ -1,6 +1,6 @@
 package com.witchshop.artifactservice.kafka;
 
-import com.witchshop.artifactservice.entity.TaskMessage;
+import com.witchshop.sharedlib.entity.TaskMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
