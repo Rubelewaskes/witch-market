@@ -50,19 +50,6 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./infra/initdb:/docker-entrypoint-initdb.d
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-    ports:
-      - ${PGADMIN_PORT_OUT}:${PGADMIN_PORT_IN}
-    networks:
-      - dev-net
-    depends_on:
-      - postgres
   
   order-management-service:
     build:
@@ -76,6 +63,7 @@ services:
       - ${OMS_PORT_OUT}:${OMS_PORT_IN}
     depends_on:
       - kafka
+      - postgres
 
   artifact-service:
     build:
@@ -84,12 +72,12 @@ services:
     networks:
       - dev-net
     environment:
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       SPRING_PROFILES_ACTIVE: docker
     ports:
       - ${AS_PORT_OUT}:${AS_PORT_IN}
     depends_on:
       - kafka
+      - postgres
 
 volumes:
   postgres-data:
