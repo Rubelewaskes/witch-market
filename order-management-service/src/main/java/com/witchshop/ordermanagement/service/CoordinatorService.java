@@ -67,22 +67,27 @@ public class CoordinatorService {
 
             if (results.get(results.size() - 1).getStatus().equals("SUCCESS")){
                 dbService.updateOrderStatus(resultTaskMessage.getOrderId(), OrderStatuses.COMPLETED);
+                dbService.markOrderAsCompleted(resultTaskMessage.getOrderId());
                 kafkaService.completed(resultTaskMessage);
             }
             else{
+                //Потом будет ретрай логика, пока в завершённое летит
                 dbService.updateOrderStatus(resultTaskMessage.getOrderId(), OrderStatuses.CANCELLED);
+                dbService.markOrderAsCompleted(resultTaskMessage.getOrderId());
                 kafkaService.cancelled(resultTaskMessage);
             }
         }
         else{
             if (results.get(results.size() - 1).getStatus().equals("FAILED")){
+                //Если один из этапов был неудачным, то остальные не выполняются
                 dbService.updateOrderStatus(resultTaskMessage.getOrderId(), OrderStatuses.CANCELLED);
+                dbService.markOrderAsCompleted(resultTaskMessage.getOrderId());
                 kafkaService.cancelled(resultTaskMessage);
             }
             else{
                 dbService.updateOrderStatus(resultTaskMessage.getOrderId(), OrderStatuses.IN_PROGRESS);
 
-                TaskExecution task =dbService.insertNewTask(
+                TaskExecution task = dbService.insertNewTask(
                         resultTaskMessage.getOrderId(),
                         nextStep.getStepNumber(),
                         nextStep.getSpecialization(),
