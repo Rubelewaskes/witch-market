@@ -17,7 +17,14 @@
 
     <update id="updateOrderStatus">
         UPDATE orders
-        SET status = #{orderStatus, typeHandler=com.witchshop.sharedlib.typehandler.TaskStatusesTypeHandler}
+        SET status = #{orderStatus, typeHandler=com.witchshop.sharedlib.typehandler.TaskStatusesTypeHandler},
+            updated_at = NOW()
+        WHERE id = #{orderId, typeHandler=com.witchshop.sharedlib.typehandler.UUIDTypeHandler}
+    </update>
+
+    <update id="markOrderAsCompleted">
+        UPDATE orders
+        SET completed_at = NOW()
         WHERE id = #{orderId, typeHandler=com.witchshop.sharedlib.typehandler.UUIDTypeHandler}
     </update>
 

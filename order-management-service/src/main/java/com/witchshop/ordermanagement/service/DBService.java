@@ -35,6 +35,9 @@ public class DBService {
     public void updateOrderStatus(UUID orderId, OrderStatuses orderStatus) {
         orderMapper.updateOrderStatus(orderId, orderStatus);
     }
+    public void markOrderAsCompleted(UUID orderId){
+        orderMapper.markOrderAsCompleted(orderId);
+    }
 
     public PipelineStepDefinition getStepByPipelineIdAndStepNumber(Long pipelineId, Integer stepNumber) {
         return pipelineStepDefinitionMapper.selectStepByPipelineIdAndStepNumber(pipelineId, stepNumber);
