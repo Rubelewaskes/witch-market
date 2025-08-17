@@ -7,13 +7,13 @@
 
     <resultMap id="PipelineStepDefinitionMap"
                type="com.witchshop.sharedlib.dao.PipelineStepDefinition">
-        <id property="id" column="id" javaType="Integer" jdbcType="INTEGER"/>
-        <result property="pipelineId" column="pipeline_id" jdbcType="BIGINT"/>
-        <result property="stepNumber" column="step_number" jdbcType="INTEGER"/>
+        <id property="id" column="id"/>
+        <result property="pipelineId" column="pipeline_id" />
+        <result property="stepNumber" column="step_number"/>
         <result property="specialization" column="specialization"
                 typeHandler="com.witchshop.sharedlib.typehandler.SpecializationTypeHandler"
                 javaType="com.witchshop.sharedlib.enums.Specialization"/>
-        <result property="taskType" column="task_type" jdbcType="VARCHAR"/>
+        <result property="taskType" column="task_type"/>
         <result property="ingredients" column="ingredients"
                 typeHandler="com.witchshop.sharedlib.typehandler.ListMapTypeHandler"/>
         <result property="requirements" column="requirements"
