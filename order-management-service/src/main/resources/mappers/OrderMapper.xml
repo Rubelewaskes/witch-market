@@ -21,4 +21,41 @@
         WHERE id = #{orderId, typeHandler=com.witchshop.sharedlib.typehandler.UUIDTypeHandler}
     </update>
 
+    <resultMap id="OrderStatusResultMap" type="com.witchshop.ordermanagement.entity.OrderStatus">
+        <id property="orderId" column="order_id" jdbcType="OTHER"
+            typeHandler="com.witchshop.sharedlib.typehandler.UUIDTypeHandler"/>
+        <result property="orderStatus" column="order_status"
+            typeHandler="com.witchshop.sharedlib.typehandler.OrderStatusesTypeHandler"/>
+        <collection property="stepsStatuses"
+                    javaType="java.util.ArrayList"
+                    ofType="com.witchshop.ordermanagement.entity.TaskStatus">
+            <result property="taskId" column="task_id" jdbcType="OTHER"
+                    typeHandler="com.witchshop.sharedlib.typehandler.UUIDTypeHandler"/>
+            <result property="stepNumber" column="step_number"/>
+            <result property="specialization" column="specialization"
+                    typeHandler="com.witchshop.sharedlib.typehandler.SpecializationTypeHandler"/>
+            <result property="taskStatus" column="task_status"
+                    typeHandler="com.witchshop.sharedlib.typehandler.TaskStatusesTypeHandler"/>
+            <result property="startedAt" column="started_at"/>
+            <result property="completedAt" column="completed_at"/>
+        </collection>
+    </resultMap>
+
+    <select id="getOrderStatusById" resultMap="OrderStatusResultMap">
+        SELECT
+            o.id AS order_id,
+            o.status AS order_status,
+            psd.step_number,
+            psd.specialization,
+            te.id as task_id,
+            te.status AS task_status,
+            te.started_at,
+            te.completed_at
+        FROM orders o
+        JOIN pipeline_step_definitions psd ON psd.pipeline_id = o.pipeline_id
+        LEFT JOIN task_executions te ON te.order_id = o.id AND te.step_number = psd.step_number
+        WHERE o.id = #{id, typeHandler=com.witchshop.sharedlib.typehandler.UUIDTypeHandler}
+        ORDER BY psd.step_number
+    </select>
+
 </mapper>

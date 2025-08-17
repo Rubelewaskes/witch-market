@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.witchshop.ordermanagement.mapper.WorkerMapper">
+    <select id="getWorkersBySpecialization" resultType="com.witchshop.sharedlib.dao.Workers">
+        SELECT id,
+               specialization,
+               status,
+               last_activity as lastActivity,
+               thread_pool_size as threadPoolSize
+        FROM workers
+        WHERE specialization = #{type, typeHandler=com.witchshop.sharedlib.typehandler.SpecializationTypeHandler}
+    </select>
+</mapper>
