@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+//TODO создание воркеров по потокам, удаление воркеров при отключении
+
 @Service
 @RequiredArgsConstructor
 public class WorkerRegistrationService {
@@ -23,7 +25,7 @@ public class WorkerRegistrationService {
 
         workerMapper.insertWorker(this.worker);
     }
-
+    // TODO не работает шедулер
     @Scheduled(fixedRate = 15*1000)
     public void updateLastActivity() {
         workerMapper.updateActivity(worker.getId());
