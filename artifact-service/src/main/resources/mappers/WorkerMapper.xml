@@ -6,7 +6,12 @@
 <mapper namespace="com.witchshop.artifactservice.mapper.WorkerMapper">
 
     <select id="findAvailableWorker" resultType="com.witchshop.sharedlib.dao.Workers">
-        SELECT * FROM workers
+        SELECT id,
+               specialization,
+               status,
+               last_activity as lastActivity,
+               thread_pool_size as threadPoolSize
+        FROM workers
         WHERE specialization = 'ARTIFACT'
           AND status = 'ACTIVE'
             LIMIT 1
