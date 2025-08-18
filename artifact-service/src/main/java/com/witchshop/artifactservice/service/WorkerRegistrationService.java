@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class WorkerRegistrationService {
     private final Workers worker = new Workers();
     private final WorkerMapper workerMapper;
+    private final DBService dbService;
 
     @PostConstruct
     public void registerWorker() {
@@ -23,11 +24,11 @@ public class WorkerRegistrationService {
         this.worker.setSpecialization(Specialization.ARTIFACT);
         this.worker.setThreadPoolSize(1);
 
-        workerMapper.insertWorker(this.worker);
+        dbService.insertWorker(this.worker);
     }
     // TODO не работает шедулер
     @Scheduled(fixedRate = 15*1000)
     public void updateLastActivity() {
-        workerMapper.updateActivity(worker.getId());
+        dbService.updateWorkerActivity(worker.getId());
     }
 }

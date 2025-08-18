@@ -11,4 +11,5 @@ public interface WorkerMapper {
     Workers findAvailableWorker();
     void insertWorker(@Param("worker")Workers worker);
     void updateActivity(@Param("id")UUID id);
+    //TODO Delete метод
 }
