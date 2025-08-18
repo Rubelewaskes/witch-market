@@ -15,6 +15,7 @@ import com.witchshop.ordermanagement.mapper.OrderMapper;
 import com.witchshop.ordermanagement.mapper.PipelineStepDefinitionMapper;
 import com.witchshop.ordermanagement.mapper.TaskExecutionMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -47,6 +48,10 @@ public class DBService {
         orderMapper.markOrderAsCompleted(orderId);
     }
 
+    @Cacheable(
+            value = "pipeline_step_definitions",
+            key = "{#pipelineId, #stepNumber}"
+    )
     public PipelineStepDefinition getStepByPipelineIdAndStepNumber(Long pipelineId, Integer stepNumber) {
         return pipelineStepDefinitionMapper.selectStepByPipelineIdAndStepNumber(pipelineId, stepNumber);
     }
@@ -60,10 +65,6 @@ public class DBService {
 
         taskExecutionMapper.insertTask(task);
         return task;
-    }
-
-    public PipelineStepDefinition getNextStep(Long pipelineId, Integer stepNumber){
-        return pipelineStepDefinitionMapper.selectStepByPipelineIdAndStepNumber(pipelineId, stepNumber);
     }
 
     public TaskStatus getTaskStatusById(UUID id){

@@ -66,7 +66,7 @@ public class CoordinatorService {
             return;
             //TODO Подумать над Exception
         }
-        PipelineStepDefinition nextStep = dbService.getNextStep(resultTaskMessage.getPipelineId(),resultTaskMessage.getStepNumber()+1);
+        PipelineStepDefinition nextStep = dbService.getStepByPipelineIdAndStepNumber(resultTaskMessage.getPipelineId(),resultTaskMessage.getStepNumber()+1);
         List<TaskMessage.TaskResult> results = resultTaskMessage.getPayload().getPreviousResults();
 
         if (nextStep == null){
