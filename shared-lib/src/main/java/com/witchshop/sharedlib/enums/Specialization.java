@@ -1,9 +1,10 @@
 package com.witchshop.sharedlib.enums;
 
-public enum Specialization {
+import java.io.Serializable;
+
+public enum Specialization implements Serializable {
     ARTIFACT,
     CHIMEROLOGIST,
     POTION,
     ARTIFACTOR, SCHOLAR
 }
-
