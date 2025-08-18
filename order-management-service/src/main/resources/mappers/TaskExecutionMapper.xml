@@ -16,4 +16,27 @@
                 NOW())
     </insert>
 
+    <resultMap id="TaskStatusMap" type="com.witchshop.ordermanagement.entity.TaskStatus">
+        <id property="taskId" column="id" jdbcType="OTHER"
+            typeHandler="com.witchshop.sharedlib.typehandler.UUIDTypeHandler"/>
+        <result property="stepNumber" column="step_number"/>
+        <result property="specialization" column="specialization"
+                typeHandler="com.witchshop.sharedlib.typehandler.SpecializationTypeHandler"/>
+        <result property="taskStatus" column="status"
+                typeHandler="com.witchshop.sharedlib.typehandler.TaskStatusesTypeHandler"/>
+        <result property="startedAt" column="started_at"/>
+        <result property="completedAt" column="completed_at"/>
+    </resultMap>
+
+    <select id="getTaskStatusById" resultMap="TaskStatusMap">
+        SELECT
+            id,
+            step_number,
+            specialization,
+            status,
+            started_at,
+            completed_at
+        FROM task_executions
+        WHERE id = #{id, typeHandler=com.witchshop.sharedlib.typehandler.UUIDTypeHandler}
+    </select>
 </mapper>

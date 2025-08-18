@@ -1,5 +1,6 @@
 package com.witchshop.ordermanagement.mapper;
 
+import com.witchshop.ordermanagement.entity.OrderStatus;
 import com.witchshop.sharedlib.dao.Order;
 import com.witchshop.sharedlib.enums.OrderStatuses;
 import org.apache.ibatis.annotations.Mapper;
@@ -11,5 +12,5 @@ import java.util.UUID;
 public interface OrderMapper {
     void insertOrder(@Param("order") Order order);
     void updateOrderStatus(@Param("orderId") UUID orderId, @Param("orderStatus")OrderStatuses orderStatus);
-    void markOrderAsCompleted(@Param("orderId") UUID orderId);
+    OrderStatus getOrderStatusById(@Param("id") UUID id);
 }

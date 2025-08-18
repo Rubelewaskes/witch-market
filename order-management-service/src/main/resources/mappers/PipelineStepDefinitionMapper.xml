@@ -7,7 +7,7 @@
 
     <resultMap id="PipelineStepDefinitionMap"
                type="com.witchshop.sharedlib.dao.PipelineStepDefinition">
-        <id property="id" column="id" javaType="Integer" jdbcType="INTEGER"/>
+        <id property="id" column="id" javaType="Long" jdbcType="INTEGER"/>
         <result property="pipelineId" column="pipeline_id" jdbcType="BIGINT"/>
         <result property="stepNumber" column="step_number" jdbcType="INTEGER"/>
         <result property="specialization" column="specialization"
