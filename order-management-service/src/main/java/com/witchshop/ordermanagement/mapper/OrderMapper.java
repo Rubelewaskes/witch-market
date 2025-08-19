@@ -12,5 +12,6 @@ import java.util.UUID;
 public interface OrderMapper {
     void insertOrder(@Param("order") Order order);
     void updateOrderStatus(@Param("orderId") UUID orderId, @Param("orderStatus")OrderStatuses orderStatus);
+    void markOrderAsCompleted(@Param("id") UUID id);
     OrderStatus getOrderStatusById(@Param("id") UUID id);
 }
